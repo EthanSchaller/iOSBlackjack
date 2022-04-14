@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class GameController: UIViewController {
     @IBOutlet weak var hCard1: UIImageView!
@@ -184,7 +185,7 @@ class GameController: UIViewController {
         
         suit = setupSuit(temp: tempSuit)
         
-        pic = getPic(tempSuit: suit, tempName: name)
+        pic = getPic(tempSuit: suit, tempName: name, tempValue: value)
         
         name += " of \(suit)"
         
@@ -220,8 +221,14 @@ class GameController: UIViewController {
         return suit
     }
     
-    func getPic(tempSuit: String, tempName: String)->String {
-        let picName = "\(tempSuit)_\(tempName)"
+    func getPic(tempSuit: String, tempName: String, tempValue: Int)->String {
+        var picName: String
+        
+        if tempValue < 10 {
+            picName = "card_\(tempSuit.lowercased())_0\(tempName)"
+        } else {
+            picName = "card_\(tempSuit.lowercased())_\(tempName)"
+        }
         
         return picName
     }
@@ -241,19 +248,18 @@ class GameController: UIViewController {
             i += 1
         }
         
-        /*
-            hCard1.image = UIImage(named: hHand[0].pic)
-            hCard2.image = UIImage(named: hHand[1].pic)
-            hCard3.image = UIImage(named: hHand[2].pic)
-            hCard4.image = UIImage(named: hHand[3].pic)
-            hCard5.image = UIImage(named: hHand[4].pic)
-            
-            pCard1.image = UIImage(named: pHand[0].pic)
-            pCard2.image = UIImage(named: pHand[1].pic)
-            pCard3.image = UIImage(named: pHand[2].pic)
-            pCard4.image = UIImage(named: pHand[3].pic)
-            pCard5.image = UIImage(named: pHand[4].pic)
-        */
+        hCard1.image = UIImage(named: hHand[0].pic)
+        hCard2.image = UIImage(named: hHand[1].pic)
+        hCard3.image = UIImage(named: hHand[2].pic)
+        hCard4.image = UIImage(named: hHand[3].pic)
+        hCard5.image = UIImage(named: hHand[4].pic)
+        
+        pCard1.image = UIImage(named: pHand[0].pic)
+        pCard2.image = UIImage(named: pHand[1].pic)
+        pCard3.image = UIImage(named: pHand[2].pic)
+        pCard4.image = UIImage(named: pHand[3].pic)
+        pCard5.image = UIImage(named: pHand[4].pic)
+        
     }
 }
 
