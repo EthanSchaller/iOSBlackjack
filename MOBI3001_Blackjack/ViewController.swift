@@ -6,14 +6,20 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UITabBarController {
+    let appContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        let crntPlayer = UserPlayer(context: appContext)
+        
+        crntPlayer.name = "Player"
+        crntPlayer.points = 0
+        
+        try! appContext.save()
     }
-
-
 }
 
