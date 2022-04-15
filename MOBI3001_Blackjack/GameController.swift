@@ -87,6 +87,16 @@ class GameController: UIViewController {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        let players =  try! appContext.fetch(UserPlayer.fetchRequest())
+        
+        for player in players {
+            (player as! UserPlayer).points = Int32(ptsTtl)
+        }
+        
+        try! appContext.save()
+    }
+    
     @IBAction func pressedHit(_ sender: UIButton) {
         if(pCard3.isHidden) {
             pCard3.isHidden = false
@@ -320,16 +330,16 @@ class GameController: UIViewController {
             }
         }
         plyrTotal.text = "Hand Total: \(pValue)"
-        if(pValue > 21) {
+        if(pValue >= 22) {
             ptsTtl -= 50
             plyrPoints.text = "Player Points: \(ptsTtl)"
             
-            endGame()
+            callAlert(state: "lose")
         } else if(pValue == 21) {
             ptsTtl += 50
             plyrPoints.text = "Player Points: \(ptsTtl)"
             
-            houseTurn()
+            callAlert(state: "win")
         }
     }
     
@@ -372,13 +382,6 @@ class GameController: UIViewController {
             }
         }
         houseTotal.text = "Hand Total: \(hValue)"
-        if(hValue > 21) {
-            ptsTtl -= 50
-            plyrPoints.text = "Player Points: \(ptsTtl)"
-        } else if(hValue == 21) {
-            ptsTtl += 50
-            plyrPoints.text = "Player Points: \(ptsTtl)"
-        }
     }
     
     func houseTurn() {
@@ -396,7 +399,31 @@ class GameController: UIViewController {
             calcHouseHand()
         }
         
-        endGame()
+        if(hValue <= 21 && hValue >= pValue) {
+            ptsTtl -= 50
+            plyrPoints.text = "Player Points: \(ptsTtl)"
+            
+            callAlert(state: "lose")
+        } else if(hValue > 21 || hValue < pValue) {
+            ptsTtl += 50
+            plyrPoints.text = "Player Points: \(ptsTtl)"
+            
+            callAlert(state: "win")
+        }
+    }
+    
+    func callAlert(state: String) {
+        var alertOut: UIAlertController
+        
+        if(state == "win"){
+            alertOut = UIAlertController(title: "You Win", message: "Click Dismiss To End The Game And Start A New One", preferredStyle: .alert);
+        } else {
+            alertOut = UIAlertController(title: "You Lose", message: "Click Dismiss To End The Game And Start A New One", preferredStyle: .alert);
+        }
+        
+        let clsAction = UIAlertAction(title: "Dismiss", style: .default, handler: {(_) in self.endGame()})
+        alertOut.addAction(clsAction);
+        present(alertOut, animated: true, completion: nil);
     }
     
     func endGame() {
