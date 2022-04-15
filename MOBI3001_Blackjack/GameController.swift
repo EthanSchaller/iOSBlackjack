@@ -24,6 +24,7 @@ class GameController: UIViewController {
     @IBOutlet weak var houseTotal: UILabel!
     @IBOutlet weak var plyrTitle: UILabel!
     @IBOutlet weak var plyrTotal: UILabel!
+    @IBOutlet weak var plyrPoints: UILabel!
     
     @IBOutlet weak var bttnHit: UIButton!
     @IBOutlet weak var bttnStnd: UIButton!
@@ -79,11 +80,20 @@ class GameController: UIViewController {
         
         for player in players {
             plyrTitle.text = "\(((player as! UserPlayer).name)!)'s Hand"
+            plyrPoints.text = "Player Points: \((player as! UserPlayer).points)"
         }
     }
     
     @IBAction func pressedHit(_ sender: UIButton) {
+        if(pCard3.isHidden) {
+            pCard3.isHidden = false
+        } else if(pCard4.isHidden) {
+            pCard4.isHidden = false
+        } else if(pCard5.isHidden) {
+            pCard5.isHidden = false
+        }
         
+        calcHandTotal()
     }
     
     @IBAction func pressedStand(_ sender: UIButton) {
@@ -100,9 +110,9 @@ class GameController: UIViewController {
         
         pCard1.isHidden = false
         pCard2.isHidden = false
+        
+        calcHandTotal()
     }
-    
-    
     
     func setupCard(tempNum: Int, tempSuit: Int)->card {
         var newCard: card
@@ -235,21 +245,19 @@ class GameController: UIViewController {
     
     func addToHands() {
         var i = 0
-        
         while i <= 4 {
             hHand[i] = deck[i]
             i += 1
         }
         
         i = 0
-        
         while i <= 4 {
             pHand[i] = deck[i + 5]
             i += 1
         }
         
         hCard1.image = UIImage(named: hHand[0].pic)
-        hCard2.image = UIImage(named: hHand[1].pic)
+        hCard2.image = UIImage(named: "card_back")
         hCard3.image = UIImage(named: hHand[2].pic)
         hCard4.image = UIImage(named: hHand[3].pic)
         hCard5.image = UIImage(named: hHand[4].pic)
@@ -259,7 +267,127 @@ class GameController: UIViewController {
         pCard3.image = UIImage(named: pHand[2].pic)
         pCard4.image = UIImage(named: pHand[3].pic)
         pCard5.image = UIImage(named: pHand[4].pic)
+    }
+    
+    func calcHandTotal(){
+        pValue = 0
         
+        if(!pCard1.isHidden) {
+            if(pHand[0].value == 11 && (pValue + 11) > 21) {
+                pValue += 1
+            } else {
+                pValue += pHand[0].value
+            }
+        }
+        if(!pCard2.isHidden) {
+            if(pHand[1].value == 11 && (pValue + 11) > 21) {
+                pValue += 1
+            } else {
+                pValue += pHand[1].value
+            }
+        }
+        if(!pCard3.isHidden) {
+            if(pHand[2].value == 11 && (pValue + 11) > 21) {
+                pValue += 1
+            } else {
+                pValue += pHand[2].value
+            }
+        }
+        if(!pCard4.isHidden) {
+            if(pHand[3].value == 11 && (pValue + 11) > 21) {
+                pValue += 1
+            } else {
+                pValue += pHand[3].value
+            }
+        }
+        if(!pCard5.isHidden) {
+            if(pHand[4].value == 11 && (pValue + 11) > 21) {
+                pValue += 1
+            } else {
+                pValue += pHand[4].value
+            }
+        }
+        plyrTotal.text = "Hand Total: \(pValue)"
+        
+        if(pValue > 21) {
+            let players =  try! appContext.fetch(UserPlayer.fetchRequest())
+            
+            for player in players {
+                (player as! UserPlayer).points -= 50
+                plyrPoints.text = "Player Points: \((player as! UserPlayer).points)"
+            }
+            
+            endGame()
+        } else if(pValue == 21) {
+            let players =  try! appContext.fetch(UserPlayer.fetchRequest())
+            
+            for player in players {
+                (player as! UserPlayer).points += 50
+                plyrPoints.text = "Player Points: \((player as! UserPlayer).points)"
+            }
+            
+            endGame()
+        }
+        
+        hValue = 0
+        
+        if(!hCard1.isHidden) {
+            if(hHand[0].value == 11 && (hValue + 11) > 21) {
+                hValue += 1
+            } else {
+                hValue += hHand[0].value
+            }
+        }
+        if(!hCard2.isHidden && hCard2.image != UIImage(named: "card_back")) {
+            if(hHand[0].value == 11 && (hValue + 11) > 21) {
+                hValue += 1
+            } else {
+                hValue += hHand[0].value
+            }
+        }
+        if(!hCard3.isHidden) {
+            if(hHand[0].value == 11 && (hValue + 11) > 21) {
+                hValue += 1
+            } else {
+                hValue += hHand[0].value
+            }
+        }
+        if(!hCard4.isHidden) {
+            if(hHand[0].value == 11 && (hValue + 11) > 21) {
+                hValue += 1
+            } else {
+                hValue += hHand[0].value
+            }
+        }
+        if(!hCard5.isHidden) {
+            if(hHand[0].value == 11 && (hValue + 11) > 21) {
+                hValue += 1
+            } else {
+                hValue += hHand[0].value
+            }
+        }
+        houseTotal.text = "Hand Total: \(hValue)"
+    }
+    
+    func endGame() {
+        bttnStrt.isHidden = false
+        bttnHit.isHidden = true
+        bttnStnd.isHidden = true
+        
+        pCard1.isHidden = true
+        pCard2.isHidden = true
+        pCard3.isHidden = true
+        pCard4.isHidden = true
+        pCard5.isHidden = true
+        
+        hCard1.isHidden = true
+        hCard2.isHidden = true
+        hCard3.isHidden = true
+        hCard4.isHidden = true
+        hCard5.isHidden = true
+        
+        deck.shuffle()
+        addToHands()
     }
 }
 

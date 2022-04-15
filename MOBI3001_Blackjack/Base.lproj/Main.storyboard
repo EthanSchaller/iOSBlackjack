@@ -155,6 +155,13 @@
                                     <constraint firstAttribute="width" constant="65" id="hy2-vE-GZL"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Player Points: 0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VFU-Pu-IXZ">
+                                <rect key="frame" x="20" y="650" width="374" height="26"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="button-play" translatesAutoresizingMaskIntoConstraints="NO" id="SVy-AN-weo">
                                 <rect key="frame" x="102" y="136" width="65" height="100"/>
                                 <constraints>
@@ -225,6 +232,7 @@
                         <outlet property="pCard3" destination="Gft-tH-PmI" id="VPf-38-aUk"/>
                         <outlet property="pCard4" destination="9cs-fT-3ly" id="0nC-Tu-zzx"/>
                         <outlet property="pCard5" destination="dWP-iN-Urt" id="yeR-Wa-gji"/>
+                        <outlet property="plyrPoints" destination="VFU-Pu-IXZ" id="fIY-Ds-Rvf"/>
                         <outlet property="plyrTitle" destination="0d1-2L-qUy" id="zgh-IY-70J"/>
                         <outlet property="plyrTotal" destination="PKt-UX-dt9" id="ZIp-57-U8a"/>
                     </connections>
