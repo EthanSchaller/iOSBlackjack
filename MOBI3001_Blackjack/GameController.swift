@@ -9,6 +9,7 @@ import UIKit
 import CoreData
 
 class GameController: UIViewController {
+    //setting up all the items in this view.
     @IBOutlet weak var hCard1: UIImageView!
     @IBOutlet weak var hCard2: UIImageView!
     @IBOutlet weak var hCard3: UIImageView!
@@ -30,13 +31,17 @@ class GameController: UIViewController {
     @IBOutlet weak var bttnStnd: UIButton!
     @IBOutlet weak var bttnStrt: UIButton!
     
+    //setting up a context vaiable to be used later for core data
     let appContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    //setting up a class for a card
     class card {
+        //varibles used in the class
         var name: String
         var value: Int
         var pic: String
         
+        //initializer for the class
         init(name: String, value: Int, pic: String) {
             self.name = name
             self.value = value
@@ -44,6 +49,7 @@ class GameController: UIViewController {
         }
     }
     
+    //setting up variables to be used later on
     var deck: [card] = [card](repeating: card(name: "", value: 0, pic: ""), count: 52)
     
     var hHand: [card] = [card](repeating: card(name: "", value: 0, pic: ""), count: 5)
@@ -56,6 +62,7 @@ class GameController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //setting up variables to be used in the while loops
         var i1 = 1
         var i2 = 1
         var i3 = 0
@@ -71,12 +78,12 @@ class GameController: UIViewController {
             i1 += 1
         }
         
+        //shuffling the deck array
         deck.shuffle();
-        
-        calcPlyrHand()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        //getting the players name each time the user enters the tab so that any changes will happen
         let players =  try! appContext.fetch(UserPlayer.fetchRequest())
         
         for player in players {
@@ -88,6 +95,7 @@ class GameController: UIViewController {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
+        //when this tab is left the player's points are saved to Core Data to be shown later
         let players =  try! appContext.fetch(UserPlayer.fetchRequest())
         
         for player in players {
@@ -98,25 +106,33 @@ class GameController: UIViewController {
     }
     
     @IBAction func pressedHit(_ sender: UIButton) {
+        //displays the next unshown card
         if(pCard3.isHidden) {
             pCard3.isHidden = false
         } else if(pCard4.isHidden) {
             pCard4.isHidden = false
         } else if(pCard5.isHidden) {
+            //if five cards are in the players hand it automatically swaps to the house's turn
             pCard5.isHidden = false
+            calcPlyrHand()
+            houseTurn()
+            return
         }
         
         calcPlyrHand()
     }
     
     @IBAction func pressedStand(_ sender: UIButton) {
+        //the user stands leading to the house's turn
         houseTurn()
     }
     
     @IBAction func pressedStart(_ sender: UIButton) {
+        //shuffles the deck and adds the cards to the hand
         deck.shuffle()
         addToHands()
         
+        //sets the visibility and the images of the first two cards of each hand
         bttnStrt.isHidden = true
         bttnHit.isHidden = false
         bttnStnd.isHidden = false
@@ -132,10 +148,12 @@ class GameController: UIViewController {
         hCard4.isHidden = true
         hCard5.isHidden = true
         
+        //calculates the totals for each hand
         calcPlyrHand()
         calcHouseHand()
     }
     
+    //function to add all the cards to the deck
     func setupCard(tempNum: Int, tempSuit: Int)->card {
         var newCard: card
         
@@ -265,6 +283,7 @@ class GameController: UIViewController {
         return picName
     }
     
+    //adding the cards to the hands
     func addToHands() {
         var i = 0
         while i <= 4 {
@@ -278,6 +297,7 @@ class GameController: UIViewController {
             i += 1
         }
         
+        //setting the images
         hCard1.image = UIImage(named: "card_back")
         hCard2.image = UIImage(named: "card_back")
         hCard3.image = UIImage(named: hHand[2].pic)
@@ -291,6 +311,7 @@ class GameController: UIViewController {
         pCard5.image = UIImage(named: pHand[4].pic)
     }
     
+    //calculating the value of the displayed cards while taking into consideration if the ace should be a 1 or an 11
     func calcPlyrHand(){
         pValue = 0
         
@@ -329,7 +350,11 @@ class GameController: UIViewController {
                 pValue += pHand[4].value
             }
         }
+        
+        //sets the text on screen to display the current card value
         plyrTotal.text = "Hand Total: \(pValue)"
+        
+        //seeing if the user wins or loses
         if(pValue >= 22) {
             ptsTtl -= 50
             plyrPoints.text = "Player Points: \(ptsTtl)"
@@ -343,6 +368,7 @@ class GameController: UIViewController {
         }
     }
     
+    //calculates the houses value (same as the player one other than win/lose conditions)
     func calcHouseHand(){
         hValue = 0
         
@@ -384,7 +410,9 @@ class GameController: UIViewController {
         houseTotal.text = "Hand Total: \(hValue)"
     }
     
+    //logic behind the house's play
     func houseTurn() {
+        //only draws if the value is lower than 21, lower than the players hand value, and the fifth card is hidden
         while(hValue < 21 && hValue < pValue && hCard5.isHidden) {
             if(hCard2.image == UIImage(named: "card_back")) {
                 hCard2.image = UIImage(named: hHand[1].pic)
@@ -399,6 +427,7 @@ class GameController: UIViewController {
             calcHouseHand()
         }
         
+        //checks to see if the player or the house wins
         if(hValue <= 21 && hValue >= pValue) {
             ptsTtl -= 50
             plyrPoints.text = "Player Points: \(ptsTtl)"
@@ -412,20 +441,24 @@ class GameController: UIViewController {
         }
     }
     
+    //function to call an alert, either win or lose
     func callAlert(state: String) {
         var alertOut: UIAlertController
         
+        //if statement to change the message shown
         if(state == "win"){
             alertOut = UIAlertController(title: "You Win", message: "Click Dismiss To End The Game And Start A New One", preferredStyle: .alert);
         } else {
             alertOut = UIAlertController(title: "You Lose", message: "Click Dismiss To End The Game And Start A New One", preferredStyle: .alert);
         }
         
+        //adds and displays the alert. Dismiss calls the endGame() function
         let clsAction = UIAlertAction(title: "Dismiss", style: .default, handler: {(_) in self.endGame()})
         alertOut.addAction(clsAction);
         present(alertOut, animated: true, completion: nil);
     }
     
+    //ends the game by resetting the apps visibilities, images, and labels
     func endGame() {
         bttnStrt.isHidden = false
         bttnHit.isHidden = true

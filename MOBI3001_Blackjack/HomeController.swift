@@ -18,6 +18,7 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //adds a player into Core Data with default values and saving it
         let crntPlayer = UserPlayer(context: appContext)
         
         crntPlayer.name = "Player"
@@ -27,6 +28,7 @@ class HomeController: UIViewController {
     }
     
     @IBAction func SaveEnteredName(_ sender: Any) {
+        //setting inputted name into Core Data allowing for it to be used on the game tab
         let players =  try! appContext.fetch(UserPlayer.fetchRequest())
         
         for player in players {
